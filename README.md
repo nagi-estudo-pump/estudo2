@@ -1,10 +1,10 @@
-# Lean 4
+## Lean 4
 
-## Resumo
+### Resumo
 
 O artigo é uma introdução prática ao Lean 4, uma linguagem funcional e assistente de provas usado para verificação formal. O público-alvo são engenheiros de criptografia e desenvolvedores que desejam aprender os fundamentos da verificação formal aplicando-os a um exemplo concreto: a One-Time Pad (OTP). 
 
-### Os principais conceitos apresentados são:
+#### Os principais conceitos apresentados são:
 
 - O que é verificação formal: em vez de confiar apenas em uma prova escrita por humanos, a demonstração é codificada em Lean e verificada automaticamente. Se o compilador aceita a prova, ela é considerada logicamente correta (assumindo a correção do próprio Lean). 
 
@@ -25,6 +25,71 @@ Definição de um Shannon Cipher: usando uma structure de Lean, o artigo modela 
 
 Prova da correção da One-Time Pad: por fim, a OTP é implementada como uma instância de ShannonCipher, usando XOR tanto para cifrar quanto para decifrar. A propriedade de correção é demonstrada automaticamente combinando os lemas provados anteriormente sobre o XOR. 
 
-### Conclusão
+#### Conclusão
 
 O autor encerra relacionando a verificação formal com projetos modernos de blockchain e criptografia (como Ethereum e Zcash), destacando que essa técnica aumenta a confiança em sistemas críticos. Ao mesmo tempo, ressalta que a verificação formal não elimina todos os riscos, pois ainda é necessário modelar corretamente o sistema e confiar no compilador e nas ferramentas utilizadas. O artigo prepara o terreno para a segunda parte da série, na qual será provada formalmente a segurança perfeita (perfect secrecy) da One-Time Pad. 
+
+## A digestion of the Jacobian conjecture counterexample
+
+O post "A digestion of the Jacobian conjecture counterexample" é a tentativa de Terry Tao de explicar a estrutura conceitual do recém-descoberto contraexemplo para a Conjectura de Jacobi. Em vez de seguir a prova original linha por linha, ele procura responder à pergunta: "por que esse contraexemplo funciona?". 
+
+### Contexto
+
+A Conjectura de Jacobi, formulada em 1939, afirmava que toda aplicação polinomial
+
+F:C^n → C^n
+
+com determinante jacobiano constante e não nulo deveria possuir uma inversa polinomial.
+
+Como um jacobiano não nulo implica invertibilidade local (pelo Teorema da Função Inversa), a conjectura pode ser resumida como:
+
+- invertibilidade local ⇒ invertibilidade global.
+
+Recentemente foi encontrado um contraexemplo explícito em dimensão 3, encerrando a conjectura para n ≥ 3. O caso bidimensional permanece aberto. 
+
+### O objetivo do post
+
+Tao não tenta reproduzir todos os cálculos da construção. Em vez disso, ele procura reorganizar o argumento para revelar a "mecânica" do exemplo.
+
+A ideia central é que o mapa polinomial, apesar de parecer extremamente complicado, pode ser reinterpretado por meio de uma mudança de coordenadas e de uma descrição geométrica muito mais simples.
+
+### A principal observação
+
+Depois de uma transformação adequada, o comportamento do mapa passa a ser governado por um polinômio cúbico auxiliar.
+
+Esse cúbico determina quantos pontos do domínio são enviados para um mesmo ponto da imagem.
+
+- Se o cúbico possui três raízes distintas, existem três pré-imagens diferentes.
+- Logo, o mapa não pode ser injetivo.
+- Portanto, não pode ser invertível.
+- Assim, toda a dificuldade da conjectura acaba concentrada no estudo desse polinômio de grau 3. 
+
+O papel do discriminante Tao destaca que o discriminante desse cúbico é o objeto que organiza toda a geometria do problema.
+
+Ele separa os casos em que:
+- existem três pré-imagens distintas;
+- duas raízes coincidem;
+- ocorre uma degeneração da fibra.
+- Em vez de enxergar milhares de identidades algébricas, o leitor passa a visualizar uma superfície que controla exatamente quando a estrutura muda. 
+
+O comportamento "no infinito"
+Um dos pontos mais interessantes do texto é a explicação de por que o jacobiano constante não basta.
+
+Localmente, tudo funciona perfeitamente:
+
+- o mapa é diferenciável;
+- o jacobiano nunca se anula;
+- em torno de qualquer ponto existe uma inversa local. O problema aparece globalmente.
+
+Existem sequências de pontos que "fogem para o infinito", enquanto suas imagens permanecem limitadas. Esse fenômeno impede que a aplicação seja própria (proper), e é justamente essa falha global que permite que pontos muito distantes acabem sendo enviados para a mesma imagem. 
+
+### A mensagem principal
+
+Para Tao, a descoberta é interessante porque mostra que o contraexemplo não é uma construção artificial cheia de cancelamentos misteriosos. Depois da mudança de perspectiva correta, sua estrutura se torna relativamente simples:
+
+- um mapa polinomial explícito;
+- uma parametrização geométrica adequada;
+- um polinômio cúbico que controla as fibras;
+- um discriminante que explica quando aparecem múltiplas pré-imagens.
+
+O post é, portanto, uma "digestão" da prova original: ele não substitui o artigo técnico, mas fornece a intuição geométrica que torna o contraexemplo compreensível. Em vez de pensar apenas em manipulações algébricas, Tao mostra que a verdadeira razão do fracasso da conjectura está no comportamento global da aplicação e na geometria de suas fibras.
