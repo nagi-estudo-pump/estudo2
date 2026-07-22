@@ -93,3 +93,37 @@ Para Tao, a descoberta é interessante porque mostra que o contraexemplo não é
 - um discriminante que explica quando aparecem múltiplas pré-imagens.
 
 O post é, portanto, uma "digestão" da prova original: ele não substitui o artigo técnico, mas fornece a intuição geométrica que torna o contraexemplo compreensível. Em vez de pensar apenas em manipulações algébricas, Tao mostra que a verdadeira razão do fracasso da conjectura está no comportamento global da aplicação e na geometria de suas fibras.
+
+## Postgres consegue escalar muito mais do que as pessoas acham
+
+Postgres consegue escalar muito mais do que a maioria das startups imagina, desde que você conheça seus limites e faça alguns ajustes importantes. Antes de adicionar Kafka, ClickHouse, Redis, ElasticSearch ou outros sistemas especializados, vale a pena explorar tudo o que o Postgres oferece.
+
+Os principais pontos são:
+
+- Comece com Postgres. Ele resolve muito mais problemas do que apenas armazenar dados relacionais. A equipe da Hatchet usa Postgres como base para filas de tarefas, eventos, workflows e diversos outros componentes, evitando aumentar a complexidade operacional.
+
+- Conexões são um gargalo comum. Abrir muitas conexões simultâneas piora o desempenho em vez de melhorar. O ideal é usar um pool de conexões bem configurado (como PgBouncer) e limitar o número de conexões ativas.
+
+- Batching é um dos maiores ganhos de performance. Inserir registros em lotes (INSERT ... VALUES (...), (...), ...) aumenta drasticamente o throughput em comparação com inserir uma linha por vez.
+
+- Particione tabelas grandes. Quando uma tabela cresce para centenas de milhões ou bilhões de linhas, particionamento por data facilita retenção de dados, melhora consultas e reduz problemas de manutenção.
+
+- Autovacuum não resolve tudo. Em tabelas particionadas, é importante executar ANALYZE na tabela pai periodicamente, pois o autovacuum atualiza apenas as partições. Caso contrário, o otimizador pode escolher planos de execução ruins.
+
+- JSONB é excelente, mas tem custo. Armazenar muitos documentos grandes em jsonb pode fazer as tabelas crescerem rapidamente. A Hatchet recomenda manter apenas os dados "quentes" no banco e mover payloads antigos para armazenamento externo (como S3), deixando apenas referências no Postgres.
+
+- Evite adicionar infraestrutura cedo demais. Muitas empresas adotam Kafka, ClickHouse ou bancos de séries temporais antes de realmente precisarem. Em muitos casos, um Postgres bem modelado suporta milhões ou bilhões de registros mantendo uma arquitetura muito mais simples.
+
+### Lições práticas
+
+Se você está construindo um SaaS ou sistema backend, as recomendações práticas do artigo são:
+
+- Use Postgres como primeira opção.
+- Configure corretamente o pool de conexões.
+- Faça inserts em lote sempre que possível.
+- Monitore VACUUM e ANALYZE.
+- Particione tabelas que crescem continuamente.
+- Não abuse de jsonb para dados grandes e raramente acessados.
+- Só introduza bancos especializados quando o Postgres realmente se tornar um gargalo comprovado.
+
+Resumindo: "Use Postgres por muito mais tempo do que você imagina. Ele costuma deixar de ser o gargalo bem depois do que a maioria das startups acredita; o verdadeiro problema geralmente está na forma como ele é utilizado, e não no banco em si."
